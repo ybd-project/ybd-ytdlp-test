@@ -4,8 +4,13 @@ const express = require('express'),
 
 app.get('/', (req, res) => {
     const start = process.hrtime(),
-        ytdlp = new FluentYtdlp(req.query.url || 'https://youtu.be/5RmEzmhWeeA', true),
-        ytdlpProcess = ytdlp.dumpSingleJson().noConfig().run();
+        ytdlp = new FluentYtdlp(req.query.url || 'https://youtu.be/5RmEzmhWeeA', true);
+
+    ytdlp.setBinaryPath({
+        ytdlp: './bin/yt-dlp'
+    });
+
+    const ytdlpProcess = ytdlp.dumpSingleJson().noConfig().run();
 
     let json = '';
 
@@ -27,7 +32,7 @@ app.get('/', (req, res) => {
             message: '処理が終了しました。',
             exitStatus: code,
             processTime: end[0] + end[1] / 1000000000 + '秒',
-            returnedData: JSON.parse(json)
+            returnedData: JSON.parse(json || '{}')
         });
     });
 });
